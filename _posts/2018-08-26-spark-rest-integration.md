@@ -38,7 +38,7 @@ if you see below code of [__getServletHandler__](https://github.com/apache/spark
   }
 ```
 
-spark provides __org.apache.spark.status.api.v1__ package to jersey rest. This means, if you implement any rest api within this package it will automaticlly register your API with jersey.
+spark provides __org.apache.spark.status.api.v1__ package for jersey rest. This means, if you implement any rest api within this package it will automaticlly register your API with jersey.
 
 
 Cool, lets write some rest api.
@@ -61,7 +61,7 @@ class TestService extends {
 }
 ```
 
-Now call this api once your spark context is up using this [http://localhost:4040/api/custom/sum/43/8897] endpoint.
+Now call this api once your spark context is up using this [http://localhost:4040/api/custom/sum/43/8897](http://localhost:4040/api/custom/sum/43/8897) endpoint.
 
 So far everything seems fine, but what if you want to provide your own package to create rest services. 
 
@@ -112,7 +112,7 @@ object RestAPI extends Logging {
 }
 ```
 
-After that you will have to call __attach(sparkContext: SparkContext)__ method in your code whenever you want to start your API.
+After that, you have to call __attach(sparkContext: SparkContext)__ method in your code to start your API.
 This way you can write your basic rest features and integrate them with your spark application.
 
 For full code you can visit my github repo [link](https://github.com/skp33/spark-rest).
