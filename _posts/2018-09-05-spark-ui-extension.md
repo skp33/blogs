@@ -42,6 +42,7 @@ Here __allSchema__ map stores your schema information and __regiserSchema__ func
 
 - Second is, to create a class which extends __WebUIPage__, in which you can write your HTML logic
 for your visualization
+
 ```
 class DataFrameSchemaUIPage(parent: ExtendedUIServer) extends WebUIPage("") with Logging {
 
@@ -81,6 +82,7 @@ class DataFrameSchemaUIPage(parent: ExtendedUIServer) extends WebUIPage("") with
 This class is having all the logic for rendering your html page.
 
 - Third is, to attach your page (class which having html logic) with existing spark UI
+
 ```
 class ExtendedUIServer(sparkContext: SparkContext)
   extends SparkUITab(getSparkUI(sparkContext), "dataframeschema")
