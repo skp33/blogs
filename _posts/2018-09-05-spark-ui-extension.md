@@ -43,104 +43,104 @@ So in that case you need three things:
 - Second is, to create a class which extends __WebUIPage__, in which you can write your HTML logic
 for your visualization
 
-```scala
-class DataFrameSchemaUIPage(parent: ExtendedUIServer) extends WebUIPage("") with Logging {
-
-  /** Render the page */
-  def render(request: HttpServletRequest): Seq[Node] = {
-    import scala.collection.JavaConversions._
-
-    val content = <h4>The below table shows registered dataframes on the left, with there schemas on the
-        right.</h4>
-        <br/>
-      <div>
-        <table class="table table-bordered table-condensed" id="task-summary-table">
-          <thead>
-            <tr style="background-color: rgb(255, 255, 255);">
-              <th width="50%" class="">DataFrame</th>
-              <th width="50%" class="">Schema</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Utility.schemas.map(x =>
-            <tr style="background-color: rgb(249, 249, 249);">
-              <td>{s"${x._1}"}</td>
-              <td><pre>{s"${x._2}"}</pre></td>
-            </tr>)}
-          </tbody>
-          <tfoot></tfoot>
-        </table>
-      </div>
-
-    UIUtils.headerSparkPage(
-      "This is the extension to Spark UI to display custom information about your application.",
-      content, parent)
-  }
-}
-```
-
-This class is having all the logic for rendering your html page.
+    ```scala
+    class DataFrameSchemaUIPage(parent: ExtendedUIServer) extends WebUIPage("") with Logging {
+    
+      /** Render the page */
+      def render(request: HttpServletRequest): Seq[Node] = {
+        import scala.collection.JavaConversions._
+    
+        val content = <h4>The below table shows registered dataframes on the left, with there schemas on the
+            right.</h4>
+            <br/>
+          <div>
+            <table class="table table-bordered table-condensed" id="task-summary-table">
+              <thead>
+                <tr style="background-color: rgb(255, 255, 255);">
+                  <th width="50%" class="">DataFrame</th>
+                  <th width="50%" class="">Schema</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Utility.schemas.map(x =>
+                <tr style="background-color: rgb(249, 249, 249);">
+                  <td>{s"${x._1}"}</td>
+                  <td><pre>{s"${x._2}"}</pre></td>
+                </tr>)}
+              </tbody>
+              <tfoot></tfoot>
+            </table>
+          </div>
+    
+        UIUtils.headerSparkPage(
+          "This is the extension to Spark UI to display custom information about your application.",
+          content, parent)
+      }
+    }
+    ```
+    
+    This class is having all the logic for rendering your html page.
 
 - Third is, to attach your page (class which having html logic) with existing spark UI
 
-```scala
-class ExtendedUIServer(sparkContext: SparkContext)
-  extends SparkUITab(getSparkUI(sparkContext), "dataframeschema")
-    with Logging {
-
-  override val name = "Dataframe Schema"
-
-  val parent: SparkUI = getSparkUI(sparkContext)
-
-  attachPage(new DataFrameSchemaUIPage(this))
-  parent.attachTab(this)
-
-  def detach() {
-    getSparkUI(sparkContext).detachTab(this)
-  }
-}
-
-object ExtendedUIServer {
-  def getSparkUI(sparkContext: SparkContext): SparkUI = {
-    sparkContext.ui.getOrElse {
-      throw new SparkException("Parent SparkUI to attach this tab to not found!")
+    ```scala
+    class ExtendedUIServer(sparkContext: SparkContext)
+      extends SparkUITab(getSparkUI(sparkContext), "dataframeschema")
+        with Logging {
+    
+      override val name = "Dataframe Schema"
+    
+      val parent: SparkUI = getSparkUI(sparkContext)
+    
+      attachPage(new DataFrameSchemaUIPage(this))
+      parent.attachTab(this)
+    
+      def detach() {
+        getSparkUI(sparkContext).detachTab(this)
+      }
     }
-  }
-}
-```
-
-Here I'm attaching my page using this method call __attachPage(new DataFrameSchemaUIPage(this))__
+    
+    object ExtendedUIServer {
+      def getSparkUI(sparkContext: SparkContext): SparkUI = {
+        sparkContext.ui.getOrElse {
+          throw new SparkException("Parent SparkUI to attach this tab to not found!")
+        }
+      }
+    }
+    ```
+    
+    Here I'm attaching my page using this method call __attachPage(new DataFrameSchemaUIPage(this))__
 
 
 So that is it, now you are ready to go and test your custom webpage.
 
-```scala
-object TestUIExtension {
-  def main(args: Array[String]): Unit = {
-    val spark = ...
-
-    new ExtendedUIServer(spark.sparkContext)
-
-    import spark.implicits._
-    import Utility._
-    Seq("1").toDF("id").registerSchema
-    println("First Dataframe")
-    Thread.sleep(10000)
-
-    import org.apache.spark.sql.functions.count
-    Seq(("1", 1)).toDF("id", "count").groupBy("id").agg(count("id") as "count")
-      .registerSchema
-    println("Second Dataframe")
-
-    Seq("1").toDF("otherId").distinct().registerSchema.show
-    println("Third Dataframe")
-    Thread.sleep(60000)
-    println("Test Done ..")
-  }
-}
-```
-
-So as a first step I'll create an instance of __ExtendedUIServer__ class which will attach and 
-render your page and then later I will call __registerSchema__ which will add schema of the dataframe to UI page.
+    ```scala
+    object TestUIExtension {
+      def main(args: Array[String]): Unit = {
+        val spark = ...
+    
+        new ExtendedUIServer(spark.sparkContext)
+    
+        import spark.implicits._
+        import Utility._
+        Seq("1").toDF("id").registerSchema
+        println("First Dataframe")
+        Thread.sleep(10000)
+    
+        import org.apache.spark.sql.functions.count
+        Seq(("1", 1)).toDF("id", "count").groupBy("id").agg(count("id") as "count")
+          .registerSchema
+        println("Second Dataframe")
+    
+        Seq("1").toDF("otherId").distinct().registerSchema.show
+        println("Third Dataframe")
+        Thread.sleep(60000)
+        println("Test Done ..")
+      }
+    }
+    ```
+    
+    So as a first step I'll create an instance of __ExtendedUIServer__ class which will attach and 
+    render your page and then later I will call __registerSchema__ which will add schema of the dataframe to UI page.
 
 For full code you can visit my github repo [link](https://github.com/skp33/spark-ui-extension).
