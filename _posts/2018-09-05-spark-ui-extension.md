@@ -114,33 +114,33 @@ for your visualization
 
 So that is it, now you are ready to go and test your custom webpage.
 
-  ```scala
-  object TestUIExtension {
-    def main(args: Array[String]): Unit = {
-      val spark = ...
-  
-      new ExtendedUIServer(spark.sparkContext)
-  
-      import spark.implicits._
-      import Utility._
-      Seq("1").toDF("id").registerSchema
-      println("First Dataframe")
-      Thread.sleep(10000)
-  
-      import org.apache.spark.sql.functions.count
-      Seq(("1", 1)).toDF("id", "count").groupBy("id").agg(count("id") as "count")
-        .registerSchema
-      println("Second Dataframe")
-  
-      Seq("1").toDF("otherId").distinct().registerSchema.show
-      println("Third Dataframe")
-      Thread.sleep(60000)
-      println("Test Done ..")
-    }
+```scala
+object TestUIExtension {
+  def main(args: Array[String]): Unit = {
+    val spark = ...
+
+    new ExtendedUIServer(spark.sparkContext)
+
+    import spark.implicits._
+    import Utility._
+    Seq("1").toDF("id").registerSchema
+    println("First Dataframe")
+    Thread.sleep(10000)
+
+    import org.apache.spark.sql.functions.count
+    Seq(("1", 1)).toDF("id", "count").groupBy("id").agg(count("id") as "count")
+      .registerSchema
+    println("Second Dataframe")
+
+    Seq("1").toDF("otherId").distinct().registerSchema.show
+    println("Third Dataframe")
+    Thread.sleep(60000)
+    println("Test Done ..")
   }
-  ```
-  
-  So as a first step I'll create an instance of __ExtendedUIServer__ class which will attach and 
-  render your page and then later I will call __registerSchema__ which will add schema of the dataframe to UI page.
+}
+```
+
+So as a first step I'll create an instance of __ExtendedUIServer__ class which will attach and 
+render your page and then later I will call __registerSchema__ which will add schema of the dataframe to UI page.
 
 For full code you can visit my github repo [link](https://github.com/skp33/spark-ui-extension).
