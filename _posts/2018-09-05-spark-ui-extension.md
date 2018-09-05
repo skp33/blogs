@@ -24,26 +24,26 @@ Let's take an example, In which I want to show schema information of my Spark da
 So in that case you need three things:
 - first is, data object to store the details required to show in UI which can be updated with new information based on the requirement.
 
-```
-object Utility {
-  val allSchema: ConcurrentMap[String, String] = new ConcurrentHashMap[String, String]()
-
-  implicit class DataFrameSchema[T](df: Dataset[T]) {
-    def registerSchema: Dataset[T] = {
-        schemas.put(Thread.currentThread().getStackTrace.slice(2,4).mkString("\n"), df.schema
-          .treeString)
-      df
+    ```scala
+    object Utility {
+      val allSchema: ConcurrentMap[String, String] = new ConcurrentHashMap[String, String]()
+    
+      implicit class DataFrameSchema[T](df: Dataset[T]) {
+        def registerSchema: Dataset[T] = {
+            schemas.put(Thread.currentThread().getStackTrace.slice(2,4).mkString("\n"), df.schema
+              .treeString)
+          df
+        }
+      }
     }
-  }
-}
-```
+    ```
 
-Here __allSchema__ map stores your schema information and __regiserSchema__ function updates schema for it.
+    Here __allSchema__ map stores your schema information and __regiserSchema__ function updates schema for it.
 
 - Second is, to create a class which extends __WebUIPage__, in which you can write your HTML logic
 for your visualization
 
-```
+```scala
 class DataFrameSchemaUIPage(parent: ExtendedUIServer) extends WebUIPage("") with Logging {
 
   /** Render the page */
@@ -83,7 +83,7 @@ This class is having all the logic for rendering your html page.
 
 - Third is, to attach your page (class which having html logic) with existing spark UI
 
-```
+```scala
 class ExtendedUIServer(sparkContext: SparkContext)
   extends SparkUITab(getSparkUI(sparkContext), "dataframeschema")
     with Logging {
@@ -114,7 +114,7 @@ Here I'm attaching my page using this method call __attachPage(new DataFrameSche
 
 So that is it, now you are ready to go and test your custom webpage.
 
-```
+```scala
 object TestUIExtension {
   def main(args: Array[String]): Unit = {
     val spark = ...
